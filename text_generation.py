@@ -33,19 +33,19 @@ def sample(checkpoint, n_samples, lstm_size, vocab_size, prime="The "):
         new_state = sess.run(model.initial_state)
         for c in prime:
             x = np.zeros((1,1))
-            x[0,0] = vocab_to_int(c)
+            x[0,0] = vocab_to_int[c]
             feed = {model.inputs: x, model.keep_prob: 1., model.initial_state: new_state}
             preds, new_state = sess.run([model.prediction, model.final_state], feed_dict=feed)
 
-    c = pick_top_n(preds, vocab_size)
-    samples.append(int_to_vocab(c))
-
-    for i in range(n_samples):
-        x[0,0] = vocab_to_int(c)
-        feed = {model.inputs: x, model.keep_prob: 1., model.initial_state: new_state}
-        preds, new_state = sess.run([model.prediction, model.final_state], feed_dict=feed)
         c = pick_top_n(preds, vocab_size)
-        samples.append(int_to_vocab(c))
+        samples.append(int_to_vocab[c])
+
+        for i in range(n_samples):
+            x[0,0] = c
+            feed = {model.inputs: x, model.keep_prob: 1., model.initial_state: new_state}
+            preds, new_state = sess.run([model.prediction, model.final_state], feed_dict=feed)
+            c = pick_top_n(preds, vocab_size)
+            samples.append(int_to_vocab[c])
     return ''.join(samples)
 
 
